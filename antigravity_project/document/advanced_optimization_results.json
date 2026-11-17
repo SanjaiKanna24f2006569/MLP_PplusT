@@ -1,0 +1,17 @@
+{
+  "raw_blend_macro_f1": 0.7241,
+  "optimized_macro_f1": 0.7261,
+  "optimized_accuracy": 0.7259,
+  "best_weights": [
+    1.0,
+    1.1234,
+    1.0605,
+    1.1149
+  ],
+  "per_class_f1": [
+    0.8251,
+    0.6794,
+    0.5993,
+    0.8004
+  ]
+}

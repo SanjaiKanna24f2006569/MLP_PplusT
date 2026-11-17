@@ -1,0 +1,134 @@
+﻿MLP Project Milestone 2: Data Preprocessing
+To understand about all the milestones in detail, Please click here
+Roll number
+Submission guidelines
+Make your own copy with File &gt; Make a copy, and write only in your copy.
+Once you have finished writing your report, save or export the .docx document as a PDF.
+Rename the PDF file using the following exact convention: [roll-number]_26t3_M[Milestone-Number].pdf
+Example: If your roll number is 21f1001234 and you are submitting the PDF for Milestone 2, your file must be named exactly: 21f1001234_26t3_M2.pdf
+Instructions
+Write each answer in the &quot;Your answer&quot; box under the question, and paste the Python code (wherever required) you ran into the &quot;Your code&quot; box as text, not as a screenshot.
+Support every claim with evidence from your own analysis of the competition data: a number, a small table or a plot (Insert &gt; Image). Summarise long outputs instead of pasting them in full.
+The points under each question describe what an answer should cover. If a point does not apply to your dataset (for example, there are no date columns), you can skip it.
+Write in your own words. Clear reasoning backed by evidence matters more than length of your answer.
+There is no single correct answer, these questions are subjective and there can be multiple valid explanations of questions. Use your interpretation and understanding to answer the questions.
+You need not include all the columns(features) while answering questions, you can select a few meaningful columns and do analysis on them. Try to cover at least 50% of the columns(features) for the questions in this milestone.
+You MAY use a different kaggle notebook instead of the one shared with the host to do the task given in milestones.
+You do not need to analyse all the columns;however, make sure to cover a good number of columns to support your analysis and decisions. Complete Preprocessing need not be covered during this milestone.
+The answer length can vary depending on questions. Keep your answer concise and give a summary of the analysis and cover details using visualizations/bullet points wherever required. The maximum length of answer can be considered around 100 to 400 words.
+Plots, graphs and figures: add them in the &quot;Figures&quot; section at the end of this document, under the heading of the question they belong to, not inside the answer boxes. Number each figure as Figure Q&lt;question number&gt;.&lt;figure number&gt; (for example, Figure Q3.1) and refer to it by this number in your answer (for example, &quot;see Figure Q3.1&quot;).
+Q1. Understanding data preprocessing
+What is data preprocessing, and why does the dataset need it before modelling? Based on your EDA, which preprocessing steps does your data need? Group the columns by the kind of preprocessing they need.
+One suggested approach would be as follows:
+Role of preprocessing.
+Preprocessing steps identified from your EDA.
+Write your answer here.
+# Paste the code you ran for this question
+Q2. Duplicates, invalid and inconsistent values
+How did you handle duplicate values, invalid and inconsistent values, Explain the reasoning behind choosing that approach for each issue?
+One suggested approach would be as follows:
+Approach for each type of issue, with reasoning.
+Handling of similar issues in unseen/test data, if any.
+Write your answer here.
+# Paste the code you ran for this question
+Q3. Missing values
+How did you handle missing values in different columns, Explain your reasoning behind choosing a particular method for each column or group of columns?
+One suggested approach would be as follows:
+Methods considered and their comparison.
+Reason for choosing a method for each column or group of columns.
+Effect of the chosen method on the distribution of the column.
+Write your answer here.
+# Paste the code you ran for this question
+Q4. Outliers
+How did you treat outliers, and provide the reasoning for the chosen approach.
+One suggested approach would be as follows:
+Various approaches considered, and the choice for each column.
+Before-and-after comparison.
+Write your answer here.
+# Paste the code you ran for this question
+Q5. Scaling of numerical features
+Explain the use of scaling of numerical features? When do you need to do scaling and when do you not need to do it? Which numerical columns did you scale, what scaling methods did you use? Provide the reasoning behind your chosen approach.
+One suggested approach would be as follows:
+Columns that need scaling, and the reason.
+Columns scaled and not scaled, with reasoning.
+Scaling methods considered and their comparison.
+Write your answer here.
+# Paste the code you ran for this question
+Q6. Encoding categorical features
+Explain the use of encoding of categorical features? When do you need to do it? How did you encode the categorical columns? Describe the approach of choosing a particular encoding for each column or group of columns.
+One suggested approach would be as follows:
+Trade off between various encoding methods.
+Effect of encoding on the number of columns.
+Handling of rare and unseen categories.
+Write your answer here.
+# Paste the code you ran for this question
+Q7. Other non-numeric columns
+How did you preprocess the other non-numeric columns (for example dates, lists, free text, locations or identifiers)?
+One suggested approach would be as follows:
+Cleaning some of the values of these columns.
+Information lost in the process (for example, cleaning text loses some information).
+Write your answer here.
+# Paste the code you ran for this question
+Q8. Target variable and class balance
+Does the target variable need any preprocessing, and is the balance between its classes a concern? Describe what approach you have followed with appropriate reasoning.
+One suggested approach would be as follows:
+Preprocessing the target needs, if any.
+Class balance and its relevance to the evaluation metric.
+Techniques considered, and the reason for your decision.
+Write your answer here.
+# Paste the code you ran for this question
+Q9. Final preprocessing pipeline
+How does the data look before and after preprocessing? How did you use a pipeline to apply the steps in an appropriate order, and how did you make sure that the same steps are applied to the training and test/validation data without leaking information?
+One suggested approach would be as follows:
+Comparison of the data before and after preprocessing.
+Use of a pipeline to apply the steps in an appropriate order.
+Consistency between the training and test data after preprocessing.
+Write your answer here.
+# Paste any code you ran for this question
+Q10. Effect of preprocessing on a baseline model
+How much does your preprocessing improve the performance of a simple baseline model? Compare the same baseline model trained on minimally processed data(good enough to just run a model) and on your preprocessed data.
+One suggested approach would be as follows:
+Choice of baseline model, and the reason.
+Validation setup used for the comparison.
+Performance with and without preprocessing, using the appropriate metric.
+Write your answer here.
+# Paste the code you ran for this question
+Figures
+Add all plots, graphs and figures for this milestone in this section, under the heading of the question they belong to.
+How to add a figure
+Place your cursor below the heading of the question the figure belongs to, and use Insert &gt; Image to add the figure.
+Number each figure in the format Figure Q&lt;question number&gt;.&lt;figure number&gt;. For example, the first two figures for Q3 are Figure Q3.1 and Figure Q3.2.
+Write the figure number and a short title on the line just above the figure, for example: Figure Q3.1: Distribution of a column before and after handling missing values.
+In your answer, refer to the figure by its number, for example: &quot;The distribution keeps its original shape after imputation (see Figure Q3.1).&quot;
+Resize each figure so that it fits within the page width and all axis labels and legends are readable.
+Replace the placeholder lines under each heading with your figures. If a question has no figures, leave its heading as it is.
+Figures for Q1. Understanding data preprocessing
+Figure Q1.1: [Short title of the figure]
+[Insert image here]
+Figures for Q2. Duplicates, invalid and inconsistent values
+Figure Q2.1: [Short title of the figure]
+[Insert image here]
+Figures for Q3. Missing values
+Figure Q3.1: [Short title of the figure]
+[Insert image here]
+Figures for Q4. Outliers
+Figure Q4.1: [Short title of the figure]
+[Insert image here]
+Figures for Q5. Scaling of numerical features
+Figure Q5.1: [Short title of the figure]
+[Insert image here]
+Figures for Q6. Encoding categorical features
+Figure Q6.1: [Short title of the figure]
+[Insert image here]
+Figures for Q7. Other non-numeric columns
+Figure Q7.1: [Short title of the figure]
+[Insert image here]
+Figures for Q8. Target variable and class balance
+Figure Q8.1: [Short title of the figure]
+[Insert image here]
+Figures for Q9. Final preprocessing pipeline
+Figure Q9.1: [Short title of the figure]
+[Insert image here]
+Figures for Q10. Effect of preprocessing on a baseline model
+Figure Q10.1: [Short title of the figure]
+[Insert image here]

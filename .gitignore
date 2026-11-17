@@ -1,0 +1,46 @@
+# =============================================================================
+# IITM BS Degree - Machine Learning Practice (MLP) Git Ignore
+# =============================================================================
+
+# Virtual Environments
+venv/
+.venv/
+**/venv/
+**/.venv/
+env/
+**/env/
+
+# Python Cache & Artifacts
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.so
+
+# Model & Execution Logs
+catboost_info/
+**/catboost_info/
+*.log
+
+# Editor & OS settings
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Large Raw Datasets (Exceeds GitHub 100 MB Limit)
+# Note: Raw competition datasets should be downloaded from Kaggle:
+# https://www.kaggle.com/competitions/workspace-rental-price-tier-prediction
+**/data/train*.csv
+**/data/test*.csv
+*train.csv
+*train - Copy.csv
+*test.csv
+
+# Keep submission and metadata CSVs
+!**/submission*.csv
+!**/sample_submission.csv
+!GA_2_dataset.csv
+!**/column_audit.csv
+!**/column_decision_log.csv

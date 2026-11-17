@@ -1,0 +1,303 @@
+=== 24f2006569_26t3_M1 (1).pdf (Pages: 9) ===
+
+--- PAGE 1 ---
+MLP Project Milestone 1: Exploratory 
+Data Analysis 
+To understand about all the milestones in detail, Please click here 
+ 
+Roll number  24F2006569 
+ 
+Submission guidelines 
+ 
+1. Make your own copy with File > Make a copy, and write only in your copy.  
+2. Once you have finished writing your report, save or export the .docx document as 
+a PDF. 
+3. Rename the PDF file using the following exact convention: [roll-
+number]_26t3_M[Milestone-Number].pdf 
+4. Example: If your roll number is 21f1001234 and you are submitting the PDF for 
+Milestone 1, your file must be named exactly: 21f1001234_26t3_M1.pdf 
+Instructions 
+ 
+1. Write each answer in the "Your answer" box under the question, and paste the Python 
+code (wherever required) you ran into the "Your code" box as text, not as a screenshot. 
+2. Support every claim with evidence from your own analysis of the competition data: a 
+number, a small table or a plot (Insert > Image). Summarise long outputs instead of 
+pasting them in full. 
+3. The points under each question describe what an answer should cover. If a point does not 
+apply to your dataset (for example, there are no date columns), you can skip it. 
+4. Write in your own words. Clear reasoning backed by evidence matters more than length 
+of your answer. 
+5. There is no single correct answer, these questions are subjective and there can be 
+multiple valid explanations of questions. Use your interpretation and understanding to 
+answer the questions. 
+6. You need not include all the columns(features) while answering questions, you can select 
+a few meaningful columns and do analysis on them. Try to cover at least 50% of the 
+columns(features) for the questions in this milestone. 
+7. You MAY use a different kaggle notebook instead of the one shared with the host to do 
+
+--- PAGE 2 ---
+the task given in milestones. 
+8. You do not need to analyse all the columns;however, make sure to cover a good number 
+of columns to support your analysis and decisions. Complete EDA need not be covered 
+during this milestone, you can do more on EDA during the next milestones if required.  
+9. The answer length can vary depending on questions. Keep your answer concise and give 
+a summary of the analysis and cover details using visualizations/bullet points wherever 
+required. The maximum length of answer can be considered around 100 to 400 words. 
+ 
+Q1. Problem statement 
+What problem does this project ask you to solve, and what type of machine learning 
+problem is it? Explain your understanding in your own words. 
+ 
+One suggested approach would be as follows: 
+● The problem in your own words: what is being predicted, and what a single prediction is 
+about (for example one customer, one transaction or one product). 
+Your answer 
+ The objective is to predict the price tier of each workstation rental listing using its listing, 
+operator, location, capacity, booking and review information. The target is price_tier, with four 
+discrete classes (1–4), so this is a supervised multiclass classification problem. The model 
+learns from labelled training records and predicts tiers for the test records. 
+ 
+ 
+ 
+Q2. Dataset structure, schema and data types 
+Describe the given dataset. Describe the files, what a single row represents, and the role 
+and data type of columns. 
+One suggested approach would be as follows: 
+● The files provided and what each is for; the shape (rows × columns) of the training and 
+test data; and any column present in one file but not the other, with the reason. 
+● The data types of columns(features).  
+Your answer 
+train.csv contains 279,746 rows and 60 columns; test.csv contains 114,538 rows and 59 
+columns; sample_submission.csv contains 114,538 rows and 2 columns. The target 
+
+--- PAGE 3 ---
+price_tier exists in train but not test. Features include numeric values, categorical/text 
+fields and date-like fields stored as object. The submission example specifies ID and 
+price_tier; the competition instructions say to use space_id as ID. 
+Your code  
+print("Train:", train.shape) 
+print("Test:", test.shape) 
+print(train.dtypes) 
+print(train.head())  
+  
+Q3. Target variable and evaluation metric 
+What does the target look like, and what does the evaluation metric used in competition 
+capture?  
+One suggested approach would be as follows: 
+● The distribution of the target in the training data. 
+● Understanding of evaluation metric used in competition. 
+ 
+Your answer 
+price_tier has four classes: tier 1 = 66,889 (23.91%), tier 2 = 81,530 (29.14%), tier 3 = 
+60,839 (21.75%), and tier 4 = 70,488 (25.20%). Tier 2 is largest and tier 3 is smallest; the 
+distribution is moderately balanced. The Kaggle Evaluation section specifies macro F1, 
+which calculates F1 for each class and averages the four scores equally. Submission 
+columns must be ID and price_tier, with space_id used as ID. 
+Your code  
+counts = train["price_tier"].value_counts().sort_index() 
+print(counts) 
+print((train["price_tier"].value_counts(normalize=True).sort_index() * 
+100).round(2)) 
+counts.plot(kind="bar", title="Distribution of Price Tiers") 
+plt.xlabel("Price Tier") 
+plt.ylabel("Number of Records") 
+plt.show()  
+
+--- PAGE 4 ---
+Q4. Missing values 
+How much data is missing, where, and why? Decide whether the missingness is random 
+or structured, whether it says anything about the target, and how you will handle it. 
+One suggested approach would be as follows: 
+● Analysis of missing data. 
+● Process of identifying missing values, types of missing values. 
+● Any pattern captured in missing values. 
+Your answer 
+The most missing field is borough: 214,451 values (76.66%). Each review score/date field 
+has about 54,240 missing values (about 19.4%), zones has 48,414, utility_rooms 29,899, 
+and workstations 18,783. Borough missingness differs by tier: tier 1 85.62%, tier 2 
+76.49%, tier 3 73.27%, tier 4 71.28%, suggesting missingness may contain information. 
+Investigate whether missing reviews mean no reviews. Impute numeric columns with 
+training medians and categorical columns with an Unknown label; consider missingness 
+indicators. 
+Your code  
+missing = train.isna().sum().sort_values(ascending=False) 
+print(missing[missing > 0]) 
+print((train.groupby("price_tier")["borough"].apply(lambda x: 
+x.isna().mean() * 100)).round(2))  
+  
+Q5. Data integrity: duplicates, invalid and inconsistent 
+values 
+Which records or values are duplicated, impossible, inconsistent? For each problem, 
+decide whether it is an error or a genuine but unusual case, and say what you will do 
+about it. 
+One suggested approach would be as follows: 
+● Analysis of duplicate records.  
+● Process/approach of finding/deciding importance of features. 
+● Less important columns as per your understanding. 
+● For each issue: whether it is an error or a genuine value, and your action with the reason.  
+
+--- PAGE 5 ---
+Your answer 
+There are 0 exact duplicate rows and 0 duplicate space_id values. However, 
+max_term_days reaches 577,341,108 while its median is 365, and max_term_avg 
+reaches 2,355,760,000; these are extreme and require investigation against related term 
+fields. Do not remove these records automatically: inspect whether the values are data 
+errors or a sentinel/encoding. Date fields are stored as object and should be parsed. 
+Boolean-like t/f fields should be standardized. Exclude identifiers from direct modelling 
+unless validation shows they carry legitimate signal. 
+Your code  
+print("Duplicate rows:", train.duplicated().sum()) 
+print("Duplicate space_id:", train["space_id"].duplicated().sum()) 
+print(train[["min_term_days", "max_term_days", "max_term_floor", 
+"max_term_ceiling", "max_term_avg"]].describe().T) 
+print(train.nlargest(10, 
+"max_term_days")[["space_id","min_term_days","max_term_days","max_term_fl
+oor","max_term_ceiling","price_tier"]]) 
+Q6. Numerical features: distributions, outliers and 
+scale 
+What do the distributions of the numerical features look like? Describe their shapes, 
+scales and outliers, and explain which transformations, if any, they need. 
+One suggested approach would be as follows: 
+● Summary statistics of some important columns as per your understanding/interpretation. 
+● Distribution of values of the columns. 
+● Findings from various methods used for analysing columns as per your decision/choice. 
+Your answer 
+Histograms show right-skew in zones, workstations, min_term_days, booked_load and 
+review_count. max_term_days is extremely skewed: median 365 and maximum 
+577,341,108. max_seats has median 3 and maximum 16; zones median 1, maximum 50; 
+workstations median 2, maximum 60. Review_count has median 11 and maximum 4,222. 
+Inspect extreme values before treatment; consider log1p for strongly skewed nonnegative 
+counts and scaling for linear models. Tree-based models generally need less scaling.  
+
+--- PAGE 6 ---
+Your code  
+cols = 
+["max_seats","zones","workstations","min_term_days","max_term_days","book
+ed_load","review_count"] 
+print(train[cols].describe().round(2)) 
+train[cols].hist(figsize=(12,8), bins=30) 
+plt.tight_layout() 
+plt.show()  
+  
+Q7. Categorical and other non-numeric features 
+What do the categorical and other non-numeric columns contain and how should each 
+be represented for a model of your choice? 
+One suggested approach would be as follows: 
+● Types of values and their frequency distributions. 
+● Handling of various types of categorical columns(features). 
+● Other special columns, if any: the appropriate analysis for these columns. 
+Your answer 
+operator_class has three categories (unverified_operator, independent_operator, 
+managed_operator). access_type is dominated by whole_unit (211,010 rows), followed by 
+private_zone (65,381); shared_zone and managed_suite are rare. bookable is t for 
+277,713 rows, f for 1,936, and missing for 97. compliance_status contains unlicensed, 
+licensed, exempt and in_review. space_class, zone and operator_ref have higher 
+cardinality. Use one-hot encoding for low-cardinality fields, fill missing categories as 
+Unknown, and consider careful frequency/target encoding for high-cardinality fields inside 
+cross-validation. facilities is a JSON-like list and can be transformed into facility count or 
+indicators.  
+Your code  
+cols = 
+["operator_class","operator_certified","space_class","access_type","booka
+ble","compliance_status","metro"] 
+for col in cols: 
+    print("\\n", col) 
+    print(train[col].value_counts(dropna=False).head(10)) 
+print(train["facilities"].dropna().head().tolist())  
+
+--- PAGE 7 ---
+Q8. Relationships between features and the target 
+Which features carry the most information about the target, and what form does each 
+important relationship take? 
+One suggested approach would be as follows: 
+● Your expectations before looking: from the problem description and common sense, 
+which features should matter and in which direction? 
+● A ranked list of roughly the ten most informative features under a measure you state. 
+● Statistics or plots to find patterns/relationships. 
+Your answer 
+Pearson correlations with numeric target price_tier are strongest for max_seats (0.467), 
+zones (0.371), workstations (0.340), geo_lat (0.299) and utility_rooms (0.254). 
+min_term_days has a negative association (-0.208). Average max_seats rises from 2.42 
+in tier 1 to 5.32 in tier 4. These are associations, not causation or a definitive model-based 
+feature-importance ranking. 
+Your code  
+corr = 
+train.select_dtypes(include="number").corr()["price_tier"].drop("price_ti
+er") 
+print(corr.reindex(corr.abs().sort_values(ascending=False).index).head(10
+)) 
+print(train.groupby("price_tier")[["max_seats","zones","workstations","bo
+oked_load"]].mean().round(2))  
+ 
+Q9. Relationships among features: correlation, 
+redundancy and interactions 
+How are the features related to one another? Identify groups of redundant or strongly 
+related features. Describe how the relationship between features impact the choice of 
+models? 
+One suggested approach would be as follows: 
+● Analysis to extract patterns/relation among columns(features). 
+● Associations between categorical and numeric features, if any. 
+
+--- PAGE 8 ---
+ 
+Your answer 
+Several numerical features are highly correlated and may contain overlapping information. 
+The strongest pairs include: max_term_days–max_term_ceiling (1.000), min_term_days–
+min_term_floor (1.000), open_slots_b–open_slots_c (0.959), operator_metro_units–
+operator_metro_whole (0.942), open_slots_a–open_slots_b (0.916). In particular, 
+min_term_days and min_term_floor have correlation 1.0; review scores are also strongly 
+correlated. Check definitions before dropping columns, because related columns may 
+encode useful but redundant information. Fit all preprocessing and encoding only on 
+training folds to avoid leakage. 
+Your code  
+cols = 
+train.select_dtypes(include="number").drop(columns=["space_id","price_tie
+r"], errors="ignore") 
+corr = cols.corr().abs() 
+upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(bool)) 
+print(upper.stack().sort_values(ascending=False).head(15)) 
+Q10. Key insights and preprocessing plan 
+Tell your top 3 findings. Which insights matter most, and what exactly will you do in the 
+next milestones because of them? 
+One suggested approach would be as follows: 
+● A preprocessing plan for each group of features. 
+● At least three feature-engineering ideas that come from your EDA. 
+● The model families you expect to do well or poorly given the characteristics of this data, 
+and the simple baseline model you will start from. 
+● The main risks if they are present and how you will monitor or resolve them. 
+Your answer 
+Key findings: 
+    (1) the four target tiers are reasonably represented;  
+    (2) borough and review-related fields have substantial missingness;  
+    (3) capacity features have positive association with the target;  
+    (4) term-duration fields contain extreme values requiring validation; 
+    (5) there are no exact duplicate rows or duplicate space_id values. 
+
+--- PAGE 9 ---
+Plan: impute missing numeric values with training medians, use Unknown for missing 
+categorical values, add missingness indicators where useful, parse dates, derive facility 
+counts and review recency, validate extreme term values, encode categorical features, 
+and compare baseline, logistic regression and tree/boosting models using macro F1 on a 
+stratified validation split.  
+Your code  
+print("Target distribution:") 
+print(train["price_tier"].value_counts( 
+    normalize=True 
+).sort_index().round(3)) 
+ 
+print("\nTop missing-value columns:") 
+print(train.isna().mean().sort_values( 
+    ascending=False 
+).head(12)) 
+ 
+print("\nCapacity by price tier:") 
+print(train.groupby("price_tier")[ 
+    ["max_seats", "zones", "workstations"] 
+].mean().round(2)) 
+ 
+print("\nFacility count examples:") 
+print(train["facilities"].dropna().apply( 
+    lambda x: len(__import__("json").loads(x)) 
+).describe().round(2)) 
+ 
+

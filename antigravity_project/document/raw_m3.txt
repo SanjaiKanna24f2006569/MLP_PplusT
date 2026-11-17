@@ -1,0 +1,804 @@
+=== 24f2006569_26t3_M3.pdf (Pages: 30) ===
+
+--- PAGE 1 ---
+MLP Project Milestone 3: Feature Engineering 
+and Feature Selection 
+To understand about all the milestones in detail, Please click here 
+Roll number 24f2006569 
+ 
+Submission guidelines 
+1. Make your own copy with File > Make a copy, and write only in your copy. 
+2. Once you have finished writing your report, save or export the .docx document as a 
+PDF. 
+3. Rename the PDF file using the following exact convention: [roll-
+number]_26t3_M[Milestone-Number].pdf 
+4. Example: If your roll number is 21f1001234 and you are submitting the PDF for 
+Milestone 3, your file must be named exactly: 21f1001234_26t3_M3.pdf 
+Instructions 
+● For all the questions present in the document, please use the dataset which is provided on 
+kaggle for the current term mlp project. 
+● Write each answer in the "Your answer" box under the question, and paste the Python code 
+(wherever required) you ran into the "Your code" box as text, not as a screenshot. 
+● Support every claim with evidence from your own analysis of the competition data: a 
+number, a small table or a plot (Insert > Image). Summarise long outputs instead of pasting 
+them in full. 
+● The points under each question describe what an answer should cover. If a point does not 
+apply to your dataset (for example, there are no date columns), you can skip it. 
+● Write in your own words. Clear reasoning backed by evidence matters more than length of 
+your answer. 
+● There is no single correct answer, these questions are subjective and there can be multiple 
+valid explanations of questions. Use your interpretation and understanding to answer the 
+questions. 
+● You need not include all the columns(features) while answering questions, you can select a 
+few meaningful columns and do analysis on them. Try to cover at least 50% of the 
+columns(features) for the questions in this milestone. 
+● You MAY use a different kaggle notebook instead of the one shared with the host to do the 
+task given in milestones. 
+● You do not need to analyse all the columns;however, make sure to cover a good number of 
+columns to support your analysis and decisions. Complete feature engineering and feature 
+selection need not be covered during this milestone. 
+● The answer length can vary depending on questions. Keep your answer concise and give a 
+summary of the analysis and cover details using visualizations/bullet points wherever 
+required. The maximum length of answer can be considered around 100 to 400 words. 
+● Plots, graphs and figures: add them in the "Figures" section at the end of this document, 
+under the heading of the question they belong to, not inside the answer boxes. Number 
+each figure as Figure Q<question number>.<figure number> (for example, Figure Q3.1) and 
+refer to it by this number in your answer (for example, "see Figure Q3.1"). 
+
+--- PAGE 2 ---
+Q1. Feature engineering plan 
+Explain the role of feature engineering and feature selection in machine learning. Based on the 
+EDA findings, identify opportunities to create new features that may be useful for model 
+building. 
+One suggested approach would be as follows: 
+● Explain the difference between preprocessing, feature engineering, and feature selection. 
+● Identify limitations in the existing features based on the EDA findings. 
+ 
+Write your answer here. 
+ 
+ 
+Preprocessing handles missing values, duplicates, and outliers. Feature engineering creates 
+meaningful features from existing columns, while feature selection identifies the most useful 
+features for prediction. 
+ 
+Our dataset has 279,746 rows and 60 columns. EDA identified duplicate feature pairs, 
+extreme values in max_term_days, and substantial missing values in borough. 
+ 
+Potential new features include term range, seats per operator portfolio, and flags for extreme 
+values. These features will be evaluated against a baseline model to determine whether they 
+improve price_tier prediction. 
+ 
+
+--- PAGE 3 ---
+# Paste the code you ran for this question 
+ 
+ 
+import pandas as pd 
+import numpy as np 
+ 
+# Load dataset 
+df = pd.read_csv("/kaggle/input/YOUR-DATASET-FOLDER/YOUR-FILE.csv") 
+ 
+# Dataset overview 
+print("Dataset shape:", df.shape) 
+print("\nData types:\n", df.dtypes) 
+print("\nTarget distribution:\n", df["price_tier"].value_counts()) 
+ 
+# Missing values 
+print("\nMissing values:\n", df.isnull().sum().sort_values(ascending=False).head(10)) 
+ 
+# Check duplicate columns 
+for i in range(len(df.columns)): 
+    for j in range(i + 1, len(df.columns)): 
+        if df.iloc[:, i].equals(df.iloc[:, j]): 
+            print("Duplicate columns:", df.columns[i], df.columns[j]) 
+ 
+# Check extreme values 
+print("\nMax term days:\n", df["max_term_days"].describe( 
+    percentiles=[0.95, 0.99, 0.999] 
+)) 
+ 
+
+--- PAGE 4 ---
+Q2. Features from existing columns 
+Create new features by combining existing columns to capture additional information that may 
+be useful for model building. Explain the reasoning behind the features created. 
+One suggested approach would be as follows: 
+● Explore feature combinations such as ratios, differences, sums, rates, or other meaningful 
+calculations. 
+● Explain the reason for selecting the combinations based on EDA findings or domain 
+knowledge. 
+● Evaluate whether the new features improve the model's predictive performance. 
+ 
+Write your answer here. 
+ 
+Created two features: term_range = max_term_days - min_term_days and 
+seats_per_portfolio = max_seats / operator_portfolio_size. These capture rental duration 
+flexibility and seat availability relative to an operator’s portfolio. I will compare model 
+performance before and after adding these features to check whether they improve price_tier 
+prediction. 
+ 
+# Paste the code you ran for this question 
+ 
+import numpy as np 
+ 
+df["term_range"] = ( 
+    df["max_term_days"] - df["min_term_days"] 
+) 
+ 
+df["seats_per_portfolio"] = ( 
+    df["max_seats"] / 
+    df["operator_portfolio_size"].replace(0, np.nan) 
+) 
+ 
+print(df[[ 
+    "term_range", 
+    "seats_per_portfolio", 
+    "price_tier" 
+]].head()) 
+ 
+print(df[[ 
+    "term_range", 
+    "seats_per_portfolio" 
+]].describe()) 
+ 
+
+--- PAGE 5 ---
+Q3. Capturing non-linear relationships 
+Investigate whether any numerical features have non-linear relationships with the target. Apply 
+suitable feature engineering techniques to capture these relationships and evaluate their 
+usefulness. 
+One suggested approach would be as follows: 
+● Identify possible non-linear relationships using EDA, visualisations, or other appropriate 
+methods. 
+● Compare the methods and evaluate their effect on model performance. 
+ 
+Write your answer here. 
+ 
+Numerical features such as max_seats and operator_portfolio_size may have non-linear 
+relationships with price_tier. I applied a log transformation to reduce skewness and help 
+capture these patterns. Model performance will be compared before and after transformation 
+using the same train-test split and accuracy score. 
+ 
+
+--- PAGE 6 ---
+# Paste the code you ran for this question 
+ 
+ 
+import numpy as np 
+from sklearn.model_selection import train_test_split 
+from sklearn.ensemble import RandomForestClassifier 
+from sklearn.metrics import accuracy_score 
+ 
+df["log_max_seats"] = np.log1p(df["max_seats"]) 
+df["log_portfolio_size"] = np.log1p( 
+    df["operator_portfolio_size"].clip(lower=0) 
+) 
+ 
+# Select numerical features 
+features = [ 
+    "max_seats", 
+    "operator_portfolio_size", 
+    "log_max_seats", 
+    "log_portfolio_size" 
+] 
+ 
+data = df[features + ["price_tier"]].dropna() 
+X = data[features] 
+y = data["price_tier"] 
+ 
+X_train, X_test, y_train, y_test = train_test_split( 
+    X, y, test_size=0.2, random_state=42, stratify=y 
+) 
+ 
+model = RandomForestClassifier( 
+    n_estimators=100, random_state=42 
+) 
+model.fit(X_train, y_train) 
+ 
+print("Accuracy:", accuracy_score(y_test, model.predict(X_test))) 
+ 
+
+--- PAGE 7 ---
+Q4. Capturing feature interactions 
+Investigate whether the effect of one feature on the target depends on another feature. Create 
+suitable interaction features and evaluate whether they improve the model's predictive 
+performance. 
+One suggested approach would be as follows: 
+● Identify potential interactions between features using EDA or domain knowledge. 
+● Create suitable interaction features, such as products of two features or other meaningful 
+combinations. 
+● Compare model performance with and without the interaction features. 
+ 
+Write your answer here. 
+ 
+I created interaction features by combining `max_seats` with `operator_portfolio_size` and 
+multiplying `geo_lat` with `geo_lon`. The correlation heatmap showed a correlation of 0.10 
+between the capacity interaction and `price_tier`. The baseline model achieved an accuracy 
+of 0.6062 and macro-F1 of 0.5999, while the combined engineered-feature model achieved 
+an accuracy of 0.6008 and macro-F1 of 0.5956. The combined features did not improve 
+predictive performance in this experiment. 
+
+--- PAGE 8 ---
+# Paste the code you ran for this question 
+ 
+from sklearn.model_selection import train_test_split 
+from sklearn.ensemble import RandomForestClassifier 
+from sklearn.metrics import accuracy_score 
+from sklearn.impute import SimpleImputer 
+ 
+# Create interaction features 
+df["seats_portfolio_interaction"] = ( 
+    df["max_seats"] * df["operator_portfolio_size"] 
+) 
+ 
+df["location_interaction"] = df["geo_lat"] * df["geo_lon"] 
+ 
+features = [ 
+    "max_seats", 
+    "operator_portfolio_size", 
+    "geo_lat", 
+    "geo_lon" 
+] 
+ 
+new_features = features + [ 
+    "seats_portfolio_interaction", 
+    "location_interaction" 
+] 
+ 
+data = df[new_features + ["price_tier"]].dropna() 
+X = data[new_features] 
+y = data["price_tier"] 
+ 
+X_train, X_test, y_train, y_test = train_test_split( 
+    X, y, test_size=0.2, random_state=42, stratify=y 
+) 
+ 
+# Model without interaction features 
+model1 = RandomForestClassifier(n_estimators=100, random_state=42) 
+model1.fit(X_train[features], y_train) 
+acc1 = accuracy_score(y_test, model1.predict(X_test[features])) 
+ 
+# Model with interaction features 
+model2 = RandomForestClassifier(n_estimators=100, random_state=42) 
+model2.fit(X_train[new_features], y_train) 
+acc2 = accuracy_score(y_test, model2.predict(X_test[new_features])) 
+ 
+
+--- PAGE 9 ---
+print("Accuracy without interactions:", acc1) 
+print("Accuracy with interactions:", acc2) 
+ 
+
+--- PAGE 10 ---
+Q5. Feature extraction from other complex data types 
+Create additional features by extracting useful information from other complex data types, such 
+as dates, text, lists, geographical information, wherever applicable to the dataset. 
+One suggested approach would be as follows: 
+● Identify the columns that contain useful information not fully represented by the existing 
+features. 
+● Apply suitable feature extraction techniques, such as date-based calculations, text-derived 
+features, list statistics, or geographical features. 
+● Explain how the extracted features may help predict the target and evaluate their effect on 
+model performance. 
+ 
+Write your answer here. 
+ 
+The dataset contains geographical and categorical features. I created geo_distance_proxy 
+using latitude and longitude, and extracted text length from zone where available. These 
+features may capture location-related patterns and differences between zones. Their 
+usefulness will be evaluated by comparing model performance before and after adding them. 
+ 
+# Paste the code you ran for this question 
+ 
+import numpy as np 
+ 
+# Geographical feature 
+df["geo_distance_proxy"] = np.sqrt( 
+    df["geo_lat"]**2 + df["geo_lon"]**2 
+) 
+ 
+# Extract zone name length 
+df["zone_length"] = df["zone"].fillna("").astype(str).str.len() 
+ 
+print(df[[ 
+    "geo_distance_proxy", 
+    "zone_length", 
+    "price_tier" 
+]].head()) 
+ 
+print("New features created successfully.") 
+ 
+
+--- PAGE 11 ---
+Q6. Group-based feature engineering 
+Investigate whether grouping related rows can provide useful information for predicting the 
+target. Create suitable group-based features and explain how data leakage is prevented. 
+One suggested approach would be as follows: 
+● Identify meaningful groups of rows based on features such as location, category, or another 
+relevant attribute. 
+● Create aggregate features using statistics such as counts, means, medians, or standard 
+deviations. 
+● Explain methods used to calculate these features without using information from validation 
+or test targets or introducing other data leakage. 
+● Evaluate whether the group-based features improve model performance. 
+ 
+Write your answer here. 
+ 
+I created group-based features using zone and operator_class to capture location-based 
+workspace availability and operator distribution. Group counts are calculated from the training 
+data and applied to the test data. This prevents information leakage from validation or test 
+data. Model performance will be compared before and after adding these features. 
+ 
+# Paste the code you ran for this question 
+ 
+from sklearn.model_selection import train_test_split 
+from sklearn.ensemble import RandomForestClassifier 
+from sklearn.metrics import accuracy_score 
+ 
+# Split data first 
+train, test = train_test_split( 
+    df, test_size=0.2, random_state=42, 
+    stratify=df["price_tier"] 
+) 
+ 
+# Create group counts using training data only 
+for col in ["zone", "operator_class"]: 
+    counts = train[col].value_counts() 
+    train[col + "_count"] = train[col].map(counts).fillna(0) 
+    test[col + "_count"] = test[col].map(counts).fillna(0) 
+ 
+print(train[[ 
+    "zone_count", "operator_class_count" 
+]].head()) 
+ 
+print("Group-based features created without test-data leakage.") 
+ 
+
+--- PAGE 12 ---
+Q7. Identifying and handling redundant features 
+Identify redundant or strongly related features in the dataset, including newly engineered 
+features. Explain the features which are removed, combined, or retained and evaluate the effect 
+of these decisions. 
+One suggested approach would be as follows: 
+● Identify potentially redundant features using correlation analysis or other suitable methods. 
+● Explain reasoning behind features being removed, combined, or retained. 
+● Compare model performance and the number of features before and after handling 
+redundancy. 
+● Discuss how redundant features may affect different types of models. 
+ 
+Write your answer here. 
+ 
+Correlation analysis will be used to identify highly related numerical features. EDA already 
+identified two exact duplicate feature pairs: min_term_days and min_term_floor, and 
+max_term_days and max_term_ceiling. One feature from each pair can be removed to 
+reduce redundancy. The identifier space_id will also be excluded because it is not expected 
+to provide useful predictive information. 
+Newly engineered features will be checked for redundancy with existing features. Model 
+performance and feature count will be compared before and after removal. Redundant 
+features may increase complexity and affect linear models through multicollinearity, while 
+tree-based models are generally less sensitive to correlated features. 
+ 
+
+--- PAGE 13 ---
+# Paste the code you ran for this question 
+ 
+import pandas as pd 
+from sklearn.model_selection import train_test_split 
+from sklearn.compose import ColumnTransformer 
+from sklearn.preprocessing import OneHotEncoder 
+from sklearn.impute import SimpleImputer 
+from sklearn.pipeline import make_pipeline 
+from sklearn.ensemble import RandomForestClassifier 
+from sklearn.metrics import accuracy_score 
+ 
+data = df.dropna(subset=["price_tier"]).copy() 
+ 
+# Identify highly correlated numerical feature pairs 
+num = data.select_dtypes(include="number").drop( 
+    columns=["price_tier", "space_id"], errors="ignore" 
+) 
+corr = num.corr().abs() 
+pairs = corr.where( 
+    pd.DataFrame( 
+        [[i < j for j in range(len(corr.columns))] 
+         for i in range(len(corr.columns))], 
+        index=corr.columns, columns=corr.columns 
+    ) 
+).stack() 
+print("Highly correlated pairs:") 
+print(pairs[pairs > 0.95].sort_values(ascending=False)) 
+ 
+# Remove known redundant features and identifier 
+remove = ["space_id", "min_term_floor", "max_term_ceiling"] 
+reduced = data.drop(columns=remove, errors="ignore") 
+ 
+def evaluate(data): 
+    X = data.drop(columns="price_tier") 
+    y = data["price_tier"] 
+ 
+    X_train, X_test, y_train, y_test = train_test_split( 
+        X, y, test_size=0.2, random_state=42, stratify=y 
+    ) 
+ 
+    numeric = X.select_dtypes(include="number").columns 
+    categorical = X.select_dtypes(exclude="number").columns 
+ 
+    prep = ColumnTransformer([ 
+
+--- PAGE 14 ---
+        ("num", SimpleImputer(strategy="median"), numeric), 
+        ("cat", make_pipeline( 
+            SimpleImputer(strategy="most_frequent"), 
+            OneHotEncoder(handle_unknown="ignore") 
+        ), categorical) 
+    ]) 
+ 
+    model = make_pipeline( 
+        prep, RandomForestClassifier(n_estimators=100, random_state=42, 
+                                     n_jobs=-1) 
+    ) 
+    model.fit(X_train, y_train) 
+    return accuracy_score(y_test, model.predict(X_test)) 
+ 
+print("Features before:", data.drop( 
+    columns=["price_tier", "space_id"], errors="ignore" 
+).shape[1]) 
+print("Features after:", reduced.drop( 
+    columns="price_tier" 
+).shape[1]) 
+ 
+print("Accuracy before:", evaluate(data.drop(columns="space_id", errors="ignore"))) 
+print("Accuracy after:", evaluate(reduced)) 
+ 
+
+--- PAGE 15 ---
+Q8. Comparison of feature selection methods 
+Apply and compare suitable feature selection methods to identify the features which are useful 
+for predicting the target. Explain the selection of the final set of features and provide justification 
+for it. 
+One suggested approach would be as follows: 
+● Apply suitable feature selection methods, such as filter methods, wrapper methods. 
+● Explain the decision behind choosing the certain number of features and justify the final 
+choice based on model and performance on validation set. 
+● Explain the handling of train-test leakage when applying feature selection techniques. 
+ 
+Write your answer here. 
+ 
+ 
+I will compare a filter method (mutual information) with a wrapper method (Sequential Feature 
+Selection) to identify useful features for predicting price_tier. The final number of features will 
+be chosen based on validation accuracy and model simplicity, rather than selecting an 
+arbitrary number. 
+Feature selection will be fitted using only the training data. The validation/test data will not be 
+used to rank or select features, preventing data leakage. The selected features will then be 
+evaluated on the same validation split for a fair comparison. 
+ 
+
+--- PAGE 16 ---
+# Paste the code you ran for this question 
+ 
+ 
+import numpy as np 
+from sklearn.model_selection import train_test_split 
+from sklearn.compose import ColumnTransformer 
+from sklearn.preprocessing import OneHotEncoder 
+from sklearn.impute import SimpleImputer 
+from sklearn.pipeline import make_pipeline 
+from sklearn.feature_selection import mutual_info_classif, SequentialFeatureSelector 
+from sklearn.ensemble import RandomForestClassifier 
+from sklearn.metrics import accuracy_score 
+ 
+data = df.dropna(subset=["price_tier"]).drop( 
+    columns=["space_id"], errors="ignore" 
+).copy() 
+ 
+X = data.drop(columns="price_tier") 
+y = data["price_tier"] 
+ 
+X_train, X_val, y_train, y_val = train_test_split( 
+    X, y, test_size=0.2, random_state=42, stratify=y 
+) 
+ 
+num = X_train.select_dtypes(include="number").columns 
+cat = X_train.select_dtypes(exclude="number").columns 
+ 
+prep = ColumnTransformer([ 
+    ("num", SimpleImputer(strategy="median"), num), 
+    ("cat", make_pipeline( 
+        SimpleImputer(strategy="most_frequent"), 
+        OneHotEncoder(handle_unknown="ignore") 
+    ), cat) 
+]) 
+ 
+# Fit preprocessing only on training data 
+A_train = prep.fit_transform(X_train) 
+A_val = prep.transform(X_val) 
+names = prep.get_feature_names_out() 
+ 
+# Filter method: Mutual Information 
+scores = mutual_info_classif( 
+    A_train, y_train, random_state=42, discrete_features="auto" 
+) 
+
+--- PAGE 17 ---
+top = np.argsort(scores)[-30:] 
+ 
+# Wrapper method: select 15 of the top 30 features 
+wrapper = SequentialFeatureSelector( 
+    RandomForestClassifier(n_estimators=50, random_state=42, n_jobs=-1), 
+    n_features_to_select=15, 
+    direction="forward", 
+    scoring="accuracy", 
+    cv=3, 
+    n_jobs=-1 
+) 
+wrapper.fit(A_train[:, top], y_train) 
+chosen = top[wrapper.get_support()] 
+ 
+def check(features): 
+    model = RandomForestClassifier( 
+        n_estimators=100, random_state=42, n_jobs=-1 
+    ) 
+    model.fit(A_train[:, features], y_train) 
+    return accuracy_score(y_val, model.predict(A_val[:, features])) 
+ 
+print("All features:", A_train.shape[1]) 
+print("Filter method - top 30 accuracy:", check(top)) 
+print("Wrapper method - 15 features accuracy:", check(chosen)) 
+print("Selected features:") 
+print(names[chosen]) 
+ 
+
+--- PAGE 18 ---
+Q9. Dimensionality reduction 
+Investigate whether dimensionality reduction can provide a more compact representation of 
+features. Compare this approach with selecting a subset of the original features and determine 
+which is more suitable for the dataset. 
+One suggested approach would be as follows: 
+● Explain the difference between feature selection and dimensionality reduction. 
+● Explore a suitable dimensionality reduction technique, such as Principal Component 
+Analysis (PCA), and explain the reasoning behind choosing a certain number of 
+components. 
+● Compare model performance using the original features, selected features using feature 
+selection methods, and reduced features using dimensionality reduction. 
+ 
+Write your answer here. 
+ 
+Feature selection retains a subset of the original features, whereas dimensionality reduction 
+transforms features into a smaller set of new variables. I will use Principal Component 
+Analysis (PCA) to reduce the numerical features while retaining 95% of the variance. 
+I will compare a Random Forest model using the original features, selected features from Q8, 
+and PCA-reduced features. All preprocessing and dimensionality reduction will be fitted on 
+the training data only to prevent data leakage. The best approach will be chosen based on 
+validation accuracy and model simplicity. 
+ 
+
+--- PAGE 19 ---
+# Paste the code you ran for this question 
+ 
+ 
+import numpy as np 
+from sklearn.model_selection import train_test_split 
+from sklearn.impute import SimpleImputer 
+from sklearn.preprocessing import StandardScaler 
+from sklearn.feature_selection import SelectKBest, mutual_info_classif 
+from sklearn.decomposition import PCA 
+from sklearn.ensemble import RandomForestClassifier 
+from sklearn.metrics import accuracy_score 
+ 
+data = df.dropna(subset=["price_tier"]).copy() 
+ 
+# Use numerical predictors; exclude target and identifier 
+X = data.select_dtypes(include="number").drop( 
+    columns=["price_tier", "space_id"], errors="ignore" 
+) 
+y = data["price_tier"] 
+ 
+X_train, X_val, y_train, y_val = train_test_split( 
+    X, y, test_size=0.2, random_state=42, stratify=y 
+) 
+ 
+# Fit preprocessing on training data only 
+imp = SimpleImputer(strategy="median") 
+scaler = StandardScaler() 
+ 
+A_train = scaler.fit_transform(imp.fit_transform(X_train)) 
+A_val = scaler.transform(imp.transform(X_val)) 
+ 
+# Feature selection: select the top 15 original features 
+k = min(15, A_train.shape[1]) 
+selector = SelectKBest(mutual_info_classif, k=k) 
+S_train = selector.fit_transform(A_train, y_train) 
+S_val = selector.transform(A_val) 
+ 
+# PCA: retain 95% of training-data variance 
+pca = PCA(n_components=0.95, random_state=42) 
+P_train = pca.fit_transform(A_train) 
+P_val = pca.transform(A_val) 
+ 
+def evaluate(train_x, val_x): 
+    model = RandomForestClassifier( 
+
+--- PAGE 20 ---
+        n_estimators=100, random_state=42, n_jobs=-1 
+    ) 
+    model.fit(train_x, y_train) 
+    return accuracy_score(y_val, model.predict(val_x)) 
+ 
+print("Original features:", A_train.shape[1], 
+      "| Accuracy:", evaluate(A_train, A_val)) 
+print("Selected features:", S_train.shape[1], 
+      "| Accuracy:", evaluate(S_train, S_val)) 
+print("PCA components:", P_train.shape[1], 
+      "| Variance retained:", round(pca.explained_variance_ratio_.sum(), 4), 
+      "| Accuracy:", evaluate(P_train, P_val)) 
+ 
+
+--- PAGE 21 ---
+Q10. Final feature set and model performance 
+Summarise final feature engineering decisions. Evaluate their overall effect by comparing with 
+the model trained before and after the final feature set. 
+One suggested approach would be as follows: 
+● Summarise the features created, removed, and retained, along with the final number of 
+features. 
+● Compare the model's performance before and after feature engineering and selection using 
+the same validation strategy and evaluation metric. 
+● Identify which feature engineering or selection techniques contributed most to the final 
+model's performance. 
+ 
+Write your answer here. 
+ 
+The final feature set will exclude space_id and one feature from each exact duplicate pair: 
+min_term_floor and max_term_ceiling. Engineered features such as term_range, 
+seats_per_portfolio, log-transformed numerical features, interaction features, and group-
+based features will be evaluated for usefulness. Redundant or unhelpful features will be 
+removed based on validation results. 
+I will compare the baseline model with the final model using the same train-validation split and 
+accuracy metric. The final feature set will be selected based on improved or comparable 
+validation accuracy with fewer features. The actual improvement must be reported after 
+running the experiment. 
+ 
+
+--- PAGE 22 ---
+# Paste the code you ran for this question 
+ 
+import numpy as np 
+import pandas as pd 
+ 
+from sklearn.model_selection import train_test_split 
+from sklearn.compose import ColumnTransformer 
+from sklearn.preprocessing import OneHotEncoder 
+from sklearn.impute import SimpleImputer 
+from sklearn.pipeline import make_pipeline 
+from sklearn.ensemble import RandomForestClassifier 
+from sklearn.metrics import accuracy_score 
+ 
+data = df.dropna(subset=["price_tier"]).copy() 
+ 
+X = data.drop(columns=["price_tier", "space_id"], errors="ignore") 
+y = data["price_tier"] 
+ 
+X_train, X_val, y_train, y_val = train_test_split( 
+    X, y, test_size=0.2, random_state=42, stratify=y 
+) 
+ 
+# Create engineered features 
+def engineer(X): 
+    X = X.copy() 
+ 
+    if {"max_term_days", "min_term_days"}.issubset(X.columns): 
+        X["term_range"] = X["max_term_days"] - X["min_term_days"] 
+ 
+    if {"max_seats", "operator_portfolio_size"}.issubset(X.columns): 
+        X["seats_per_portfolio"] = ( 
+            X["max_seats"] / 
+            X["operator_portfolio_size"].replace(0, np.nan) 
+        ) 
+ 
+    for col in ["max_seats", "operator_portfolio_size"]: 
+        if col in X.columns: 
+            X["log_" + col] = np.log1p(X[col].clip(lower=0)) 
+ 
+    # Remove known duplicate columns 
+    X = X.drop( 
+        columns=["min_term_floor", "max_term_ceiling"], 
+        errors="ignore" 
+    ) 
+
+--- PAGE 23 ---
+    return X 
+ 
+X_train_final = engineer(X_train) 
+X_val_final = engineer(X_val) 
+ 
+def evaluate(train_x, val_x): 
+    num = train_x.select_dtypes(include="number").columns 
+    cat = train_x.select_dtypes(exclude="number").columns 
+ 
+    prep = ColumnTransformer([ 
+        ("num", SimpleImputer(strategy="median"), num), 
+        ("cat", make_pipeline( 
+            SimpleImputer(strategy="most_frequent"), 
+            OneHotEncoder(handle_unknown="ignore") 
+        ), cat) 
+    ]) 
+ 
+    model = make_pipeline( 
+        prep, 
+        RandomForestClassifier( 
+            n_estimators=100, random_state=42, n_jobs=-1 
+        ) 
+    ) 
+    model.fit(train_x, y_train) 
+    pred = model.predict(val_x) 
+    return accuracy_score(y_val, pred) 
+ 
+baseline_acc = evaluate(X_train, X_val) 
+final_acc = evaluate(X_train_final, X_val_final) 
+ 
+print("Baseline feature count:", X_train.shape[1]) 
+print("Final feature count:", X_train_final.shape[1]) 
+print("Baseline accuracy:", round(baseline_acc, 4)) 
+print("Final accuracy:", round(final_acc, 4)) 
+print("Accuracy change:", round(final_acc - baseline_acc, 4)) 
+ 
+
+--- PAGE 24 ---
+Figures 
+Add all plots, graphs and figures for this milestone in this section, under the heading of the 
+question they belong to. 
+How to add a figure 
+1. Place your cursor below the heading of the question the figure belongs to, and use Insert > 
+Image to add the figure. 
+2. Number each figure in the format Figure Q<question number>.<figure number>. For 
+example, the first two figures for Q3 are Figure Q3.1 and Figure Q3.2. 
+3. Write the figure number and a short title on the line just above the figure, for example: 
+Figure Q3.1: Relationship between a numerical feature and the target. 
+4. In your answer, refer to the figure by its number, for example: "The relationship is not linear 
+across the range of the feature (see Figure Q3.1)." 
+5. Resize each figure so that it fits within the page width and all axis labels and legends are 
+readable. 
+6. Replace the placeholder lines under each heading with your figures. If a question has no 
+figures, leave its heading as it is. 
+
+--- PAGE 25 ---
+Figures for Q1. Feature engineering plan 
+Figure Q1.1: Dataset Overview and Initial Data Quality 
+ 
+Figures for Q2. Features from existing columns 
+Figure Q2.1: Distribution of Engineered features 
+Figures for Q3. Capturing non-linear relationships 
+Figure Q3.1: Features Before and After Log Transformation 
+
+
+--- PAGE 26 ---
+Figures for Q4. Capturing feature interactions 
+Figure Q4.1: Correlation of interaction feature 
+
+
+--- PAGE 27 ---
+Figures for Q5. Feature extraction from complex data types 
+Figure Q5.1: Most Frequest Rounded Geographic Cells 
+Figures for Q6. Group-based feature engineering 
+Figure Q6.1: Group-Based Feature Distributions 
+
+
+--- PAGE 28 ---
+Figures for Q7. Identifying and handling redundant features 
+Figure Q7.1: Correlation Heatmap for Redundancy Review 
+Figures for Q8. Comparison of feature selection methods 
+Figure Q8.1: Top Numeric Features by Mutual Information 
+
+
+--- PAGE 29 ---
+Figures for Q9. Dimensionality reduction 
+Figure Q9.1: PCA Cumulative Explained Variance 
+Figures for Q10. Final feature set and model performance 
+Figure Q10.1: Baseline vs Engineered-Feature Model 
+
+
+--- PAGE 30 ---
+ 
+
+
