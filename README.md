@@ -9,6 +9,63 @@
 
 ---
 
+## 🌿 Multi-Laptop Branching Strategy (`main` & `officelap`)
+
+To seamlessly develop across two laptops simultaneously without file collisions or merge conflicts, the repository uses a dual-branch structure:
+
+| Branch | Purpose | Recommended System |
+| :--- | :--- | :--- |
+| **`main`** | Primary production-stable branch. Contains verified notebooks, deliverables, and submissions. | Base / Production |
+| **`officelap`** | Active development branch. All ongoing work on the office laptop is committed and pushed here. | Office Laptop |
+
+### 🛠️ Daily Workflow on Office Laptop (`officelap`)
+
+```powershell
+# 1. Switch to officelap branch (if not already on it)
+git checkout officelap
+
+# 2. Before starting work, pull any updates
+git pull origin officelap
+
+# 3. Work on your code, notebooks, or documentation...
+
+# 4. When done, commit and push your work to officelap
+git add .
+git commit -m "feat: updates from office laptop"
+git push origin officelap
+```
+
+### 🔄 Merging Changes into `main` (When Milestones are Ready)
+
+When changes on `officelap` are verified and ready to be promoted to production:
+```powershell
+# Switch to main and update
+git checkout main
+git pull origin main
+
+# Merge officelap into main
+git merge officelap
+
+# Push to GitHub main branch
+git push origin main
+
+# Switch back to officelap for continued work
+git checkout officelap
+```
+
+### 💻 Working from the Second (Home/Personal) Laptop
+
+```powershell
+# To view/pull what you worked on from the office laptop:
+git pull origin officelap
+
+# Or to sync with main:
+git checkout main
+git pull origin main
+```
+
+---
+
 ## 📁 Repository Structure
 
 ```
@@ -16,6 +73,9 @@ IITM BS MLP/
 ├── 24f2006569-notebook-2026t3.ipynb      # Registered standalone Kaggle notebook
 ├── GA_2_Assessment_Practice.ipynb         # Graded Assessment 2 practice
 ├── GA_2_dataset.csv                       # GA 2 practice dataset
+├── requirements.txt                       # Python dependencies
+├── setup_env.bat                          # 1-click Windows CMD environment setup
+├── setup_env.ps1                          # 1-click PowerShell environment setup
 │
 ├── antigravity_project/                   # Main Milestone 4 & Final Project Workspace
 │   ├── 24f2006569-notebook-2026t3.ipynb   # Official registered Kaggle submission notebook
